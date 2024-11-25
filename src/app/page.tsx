@@ -1,101 +1,185 @@
+"use client";
+import { useEffect, useState } from "react";
+import Footer from "./components/footer";
+import Navbar from "./components/navbar";
 import Image from "next/image";
+import znanyLekarz from "./assets/znanyLekarz.svg";
+import HamburgerToggle from "./components/hamburgerToggle";
+import MobileMenu from "./components/mobileMenu";
+import Hero from "./home/hero";
+import SolvingProblems from "./home/solvingProblems";
+import About from "./home/about";
+import Services from "./home/services";
+import MeetingsFormat from "./home/meetingsFormat";
+import Reviews from "./home/reviews";
+import Contact from "./home/contact";
+import { useRef } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [isOpen, setIsOpen] = useState(false);
+  const [isScale, setIsScale] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
+  const toggleMenu = () => {
+    if (isDisabled) return;
+    setIsDisabled(true);
+
+    setIsOpen(!isOpen);
+
+    if (isOpen) {
+      setTimeout(() => {
+        setIsScale(true);
+      }, 500);
+    } else {
+      setIsScale(false);
+    }
+
+    setTimeout(() => {
+      setIsDisabled(false);
+    }, 500);
+  };
+
+  const handleResize = () => {
+    if (window.innerWidth >= 768) {
+      setIsOpen(false);
+      setIsScale(true);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const scrollToSection = (id: string, offset: number = 0) => {
+    if (sectionRef.current) {
+      const container = sectionRef.current; // Kontener, w którym przewijasz
+      const element = document.getElementById(id); // Element docelowy
+
+      if (container && element) {
+        // Oblicz pozycję kontenera i elementu
+        const containerRect = container.getBoundingClientRect();
+        const elementRect = element.getBoundingClientRect();
+
+        // Uwzględnij skalowanie
+        const scaleFactor = isScale ? 1 : 0.75;
+
+        // Oblicz przesunięcie docelowe względem kontenera
+        const top =
+          container.scrollTop + // Obecna pozycja przewinięcia kontenera
+          (elementRect.top - containerRect.top) / scaleFactor - // Pozycja elementu względem kontenera
+          offset;
+
+        // Ustaw precyzyjne przewijanie
+        container.scrollTo({
+          top: top,
+          behavior: "smooth",
+        });
+
+        console.log(`Scroll target top: ${top}, scaleFactor: ${scaleFactor}`);
+      } else {
+        console.error(`Element with id "${id}" not found.`);
+      }
+    } else {
+      console.error("sectionRef.current is null.");
+    }
+  };
+
+  return (
+    <div
+      className={`overflow-x-hidden relative ${
+        isScale ? "bg-white" : "bg-neutral"
+      }`}
+    >
+      <div className="fixed right-5 top-6 z-50 md:hidden">
+        <HamburgerToggle isOpen={isOpen} toggleMenu={toggleMenu} />
+      </div>
+
+      <>
+        <MobileMenu isOpen={isOpen} scrollToSection={scrollToSection} />
+        <div
+          className={`fixed bottom-16 left-10 transition-transform ease-in-out duration-500 md:hidden ${
+            isOpen ? "translate-x-0" : "-translate-x-60"
+          }`}
+        >
+          <a href="https://www.znanylekarz.pl/karolina-buczek-makowska/psycholog/bielsko-biala">
+            <button
+              className={`px-6 py-3.5 bg-znanylekarz rounded-lg text-white font-bold transition-transform ease-in-out active:scale-90 `}
+            >
+              <Image
+                src={znanyLekarz}
+                alt="logo znany lekarz"
+                width={"100"}
+              ></Image>
+            </button>
           </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </>
+
+      <div
+        className={`fixed md:hidden bg-white/50 transition-all transform duration-500 ease-in-out h-screen w-2/3
+          ${
+            isOpen
+              ? "scale-[.7] translate-x-[12rem] translate-y-10"
+              : "scale-100 translate-x-0 translate-y-0"
+          } ${isScale ? "rounded-none" : "rounded-3xl"}
+        `}
+      ></div>
+      <div
+        ref={sectionRef}
+        className={`md:hidden transition-transform duration-500 ease-in-out h-screen bg-white overflow-y-auto ${
+          isOpen
+            ? "scale-75 translate-x-[12rem] translate-y-10"
+            : "scale-100 translate-x-0 translate-y-0"
+        } ${isScale ? "rounded-none" : "rounded-3xl rounded-mask"}`}
+        style={{
+          clipPath: isScale ? "none" : "inset(0 round 30px)",
+        }}
+      >
+        <>
+          <Navbar />
+          <main className="">
+            <Hero />
+            <SolvingProblems />
+            <section id="omnieMobile">
+              <About />
+            </section>
+            <section id="współpracaMobile">
+              <Services />
+            </section>
+
+            <MeetingsFormat />
+            <Reviews />
+            <section id="kontaktMobile">
+              <Contact />
+            </section>
+          </main>
+          <Footer />
+        </>
+      </div>
+      <div className="hidden md:block">
+        <Navbar />
+        <main>
+          <Hero />
+          <SolvingProblems />
+          <div id="omnie">
+            <About />
+          </div>
+          <div id="współpraca">
+            <Services />
+          </div>
+          <MeetingsFormat />
+          <Reviews />
+          <div id="kontakt">
+            <Contact />
+          </div>
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }

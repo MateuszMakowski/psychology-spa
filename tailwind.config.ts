@@ -10,7 +10,12 @@ const config: Config = {
     extend: {
       colors: {
         background: "var(--background)",
-        foreground: "var(--foreground)",
+        znanylekarz: "#03C3A5",
+        primary: "#A4957A",
+        accent: "#D1E9F6",
+        neutral: "#DED6C5",
+        neutral2: "#FFFFFF",
+        text: "#333333",
       },
     },
   },

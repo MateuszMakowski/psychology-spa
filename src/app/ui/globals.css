@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+h5 {
+  font-size: 16px;
+}
+
+h6 {
+  font-size: 12px;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.infinite-loop .swiper-wrapper {
+  transition-timing-function: linear;
+}
